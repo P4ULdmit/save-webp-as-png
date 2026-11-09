@@ -1,0 +1,244 @@
+<!doctype html>
+<!-- Store artwork source. Rendered by store/src/render.sh with headless Chrome:
+     screens.html?lang=en|ru&shot=1|2|tile -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --violet: #7c4dff; --teal: #14b8a6; --ink: #1d1b2e; --muted: #5d5a73;
+    --card: #ffffff; --line: #e6e3f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif; color: var(--ink);
+    background:
+      radial-gradient(900px 600px at 0% 0%, #efe8ff 0%, transparent 60%),
+      radial-gradient(900px 700px at 100% 100%, #dcf7f3 0%, transparent 60%),
+      #f7f6fb;
+  }
+  .shot { position: absolute; inset: 0; display: none; }
+  body[data-shot="1"] #s1, body[data-shot="2"] #s2, body[data-shot="tile"] #tile { display: block; }
+  body[data-shot="tile"] { width: 440px; height: 280px; }
+
+  /* ---------- shared bits ---------- */
+  .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; font-size: 20px; color: var(--muted); }
+  .brand img { width: 44px; height: 44px; }
+  h1 { font-size: 54px; line-height: 1.08; letter-spacing: -1.2px; font-weight: 700; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--violet), var(--teal));
+          -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { font-size: 21px; line-height: 1.5; color: var(--muted); }
+  .checker {
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #e9e7f1 25%, transparent 25%), linear-gradient(-45deg, #e9e7f1 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e9e7f1 75%), linear-gradient(-45deg, transparent 75%, #e9e7f1 75%);
+    background-size: 22px 22px; background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+  }
+
+  /* ---------- shot 1: context menu ---------- */
+  #s1 .copy { position: absolute; left: 72px; top: 150px; width: 400px; }
+  #s1 .copy h1 { margin: 34px 0 22px; }
+  #s1 .pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .pill { font-size: 16px; font-weight: 600; padding: 8px 14px; border-radius: 999px;
+          background: #fff; border: 1px solid var(--line); color: var(--ink); }
+  .pill b { color: var(--violet); }
+
+  .window { position: absolute; left: 520px; top: 70px; width: 700px; height: 660px; border-radius: 16px;
+            background: #fff; box-shadow: 0 30px 80px rgba(40, 20, 90, .18), 0 2px 6px rgba(0,0,0,.06); overflow: hidden; }
+  .chrome { height: 78px; background: #eceaf3; border-bottom: 1px solid var(--line); position: relative; }
+  .tab { position: absolute; left: 16px; top: 10px; width: 230px; height: 30px; background: #fff; border-radius: 9px 9px 0 0;
+         font-size: 13px; padding: 7px 14px; color: var(--muted); }
+  .omni { position: absolute; left: 16px; right: 64px; top: 44px; height: 26px; background: #fff; border-radius: 13px;
+          font-size: 13px; color: var(--muted); padding: 4px 16px; }
+  .dl { position: absolute; right: 18px; top: 44px; width: 28px; height: 26px; border-radius: 7px; background: #fff;
+        display: grid; place-items: center; }
+  .dl svg { width: 16px; height: 16px; }
+  .bubble { position: absolute; right: 12px; top: 84px; width: 300px; background: #fff; border-radius: 12px; padding: 14px 16px;
+            box-shadow: 0 12px 30px rgba(40, 20, 90, .2); display: flex; gap: 12px; align-items: center; z-index: 3; }
+  .bubble .thumb { width: 42px; height: 42px; border-radius: 8px; flex: none; overflow: hidden; }
+  .bubble .name { font-size: 14px; font-weight: 600; }
+  .bubble .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .bubble .ok { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; }
+
+  .page { padding: 34px 40px; }
+  .page .t { height: 16px; width: 58%; background: #e8e6f0; border-radius: 8px; margin-bottom: 12px; }
+  .page .t.s { width: 38%; }
+  .art { position: absolute; left: 60px; top: 190px; width: 340px; height: 340px; }
+
+  .menu { position: absolute; left: 330px; top: 300px; width: 300px; background: #fff; border-radius: 10px; padding: 6px 0;
+          box-shadow: 0 16px 40px rgba(20, 10, 60, .22), 0 0 0 1px rgba(0,0,0,.06); font-size: 14.5px; z-index: 2; }
+  .menu div { padding: 8px 18px; color: #2b2940; display: flex; align-items: center; gap: 10px; }
+  .menu hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
+  .menu .hi { background: #efe9ff; color: var(--ink); font-weight: 600; }
+  .menu .hi img { width: 18px; height: 18px; }
+  .cursor { position: absolute; left: 520px; top: 548px; width: 22px; z-index: 4; }
+
+  /* ---------- shot 2: features ---------- */
+  #s2 .head { position: absolute; left: 72px; top: 64px; right: 72px; }
+  #s2 .head h1 { font-size: 46px; margin-top: 26px; }
+  #s2 .stage { position: absolute; left: 72px; top: 270px; width: 440px; height: 440px; border-radius: 20px; overflow: hidden;
+               box-shadow: 0 24px 60px rgba(40, 20, 90, .14); }
+  #s2 .stage .art { left: 40px; top: 40px; width: 360px; height: 360px; }
+  #s2 .stage .tag { position: absolute; left: 16px; bottom: 16px; background: rgba(29,27,46,.86); color: #fff; font-size: 13px;
+                    padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+  .grid { position: absolute; left: 560px; top: 270px; width: 648px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 24px 24px 22px; height: 210px; }
+  .card .ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 16px;
+              background: linear-gradient(135deg, var(--violet), var(--teal)); }
+  .card .ic svg { width: 24px; height: 24px; }
+  .card h3 { font-size: 21px; margin-bottom: 8px; }
+  .card p { font-size: 15.5px; line-height: 1.45; color: var(--muted); }
+
+  /* ---------- small promo tile ---------- */
+  #tile { width: 440px; height: 280px; overflow: hidden;
+          background: linear-gradient(135deg, #7c4dff 0%, #3f6df0 55%, #14b8a6 100%); color: #fff; }
+  #tile img { position: absolute; left: 34px; top: 40px; width: 84px; height: 84px; border-radius: 20px;
+              box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  #tile .n { position: absolute; left: 34px; top: 150px; font-size: 28px; white-space: nowrap; font-weight: 700; letter-spacing: -.5px; line-height: 1.1; width: 380px; }
+  #tile .d { position: absolute; left: 34px; top: 222px; font-size: 16px; opacity: .92; font-weight: 500; }
+  #tile .chip { position: absolute; right: 30px; top: 52px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
+                border-radius: 12px; padding: 10px 14px; font-size: 15px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- Transparent "sticker" artwork, reused in all shots -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a65"/><stop offset="1" stop-color="#ff4f9a"/></linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4dff"/><stop offset="1" stop-color="#3f6df0"/></linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#14b8a6" stop-opacity=".95"/><stop offset="1" stop-color="#14b8a6" stop-opacity=".35"/></linearGradient>
+    <radialGradient id="glow"><stop offset="0" stop-color="#ffd54f" stop-opacity=".9"/><stop offset="1" stop-color="#ffd54f" stop-opacity="0"/></radialGradient>
+    <symbol id="art" viewBox="0 0 340 340">
+      <circle cx="210" cy="120" r="120" fill="url(#glow)"/>
+      <circle cx="210" cy="120" r="58" fill="url(#g1)"/>
+      <path d="M20 250 L110 140 L170 210 L220 160 L320 260 Q320 300 280 300 L60 300 Q20 300 20 260 Z" fill="url(#g2)"/>
+      <path d="M10 272 C80 236 150 300 220 262 C270 236 300 248 330 262 L330 318 L10 318 Z" fill="url(#g3)"/>
+      <circle cx="90" cy="86" r="26" fill="#fff" fill-opacity=".55"/>
+      <circle cx="122" cy="70" r="18" fill="#fff" fill-opacity=".4"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ shot 1 ============ -->
+<section class="shot" id="s1">
+  <div class="copy">
+    <div class="brand"><img src="../../icons/icon128.png" alt=""><span data-t="name"></span></div>
+    <h1 data-t="h1"></h1>
+    <p class="sub" data-t="sub1"></p>
+    <div class="pills">
+      <span class="pill"><b>✓</b> <span data-t="p1"></span></span>
+      <span class="pill"><b>✓</b> <span data-t="p2"></span></span>
+      <span class="pill"><b>✓</b> <span data-t="p3"></span></span>
+    </div>
+  </div>
+
+  <div class="window">
+    <div class="chrome">
+      <div class="tab" data-t="tab"></div>
+      <div class="omni">gallery.example.com/sunset-sticker</div>
+      <div class="dl"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" stroke="#7c4dff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="bubble">
+      <div class="thumb checker"><svg width="42" height="42"><use href="#art"/></svg></div>
+      <div><div class="name">sunset-sticker.png</div><div class="meta" data-t="done"></div></div>
+      <div class="ok"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.5 5 9l5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="page"><div class="t"></div><div class="t s"></div></div>
+    <svg class="art"><use href="#art"/></svg>
+    <div class="menu">
+      <div data-t="m1"></div><div data-t="m2"></div><div data-t="m3"></div><div data-t="m4"></div>
+      <hr>
+      <div class="hi"><img src="../../icons/icon32.png" alt=""><span data-t="menu"></span></div>
+      <hr>
+      <div data-t="m5"></div>
+    </div>
+  </div>
+  <svg class="cursor" viewBox="0 0 22 30" style="left:960px;top:552px"><path d="M2 2v22l6-6 4 9 4-2-4-9h8z" fill="#1d1b2e" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+</section>
+
+<!-- ============ shot 2 ============ -->
+<section class="shot" id="s2">
+  <div class="head">
+    <div class="brand"><img src="../../icons/icon128.png" alt=""><span data-t="name"></span></div>
+    <h1 data-t="h2"></h1>
+  </div>
+  <div class="stage checker">
+    <svg class="art"><use href="#art"/></svg>
+    <div class="tag" data-t="tag"></div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h3 data-t="c1h"></h3><p data-t="c1p"></p>
+    </div>
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" fill="#fff"/><rect x="13" y="13" width="8" height="8" fill="#fff"/><rect x="13" y="3" width="8" height="8" fill="#fff" fill-opacity=".45"/><rect x="3" y="13" width="8" height="8" fill="#fff" fill-opacity=".45"/></svg></div>
+      <h3 data-t="c2h"></h3><p data-t="c2p"></p>
+    </div>
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="10" r="6" fill="#fff" fill-opacity=".8"/><circle cx="15" cy="10" r="6" fill="#fff" fill-opacity=".55"/><circle cx="12" cy="15" r="6" fill="#fff" fill-opacity=".4"/></svg></div>
+      <h3 data-t="c3h"></h3><p data-t="c3p"></p>
+    </div>
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#fff"/></svg></div>
+      <h3 data-t="c4h"></h3><p data-t="c4p"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ small promo tile 440x280 ============ -->
+<section class="shot" id="tile">
+  <img src="../../icons/icon128.png" alt="">
+  <div class="chip" data-t="chip"></div>
+  <div class="n" data-t="name"></div>
+  <div class="d" data-t="tiled"></div>
+</section>
+
+<script>
+const T = {
+  en: {
+    name: 'Save WebP as PNG',
+    h1: 'Right-click.<br><em>Save as PNG.</em>',
+    sub1: 'Any WebP image on any site goes straight to your Downloads folder as a PNG.',
+    p1: 'Lossless', p2: 'Keeps transparency', p3: 'Exact colors',
+    tab: 'Sunset sticker — Gallery',
+    done: 'Done · 1.4 MB',
+    m1: 'Open image in new tab', m2: 'Save image as…', m3: 'Copy image', m4: 'Copy image address',
+    menu: 'Save as PNG', m5: 'Inspect',
+    h2: 'Pixel-perfect PNG, <em>not a re-drawn copy</em>',
+    tag: 'Transparency kept',
+    c1h: 'Lossless', c1p: 'Every pixel is kept bit for bit, including semi-transparent ones. No canvas re-drawing.',
+    c2h: 'Full alpha channel', c2p: 'Transparency stays as it was. Fully opaque images are saved as smaller RGB PNGs.',
+    c3h: 'Exact colors', c3p: 'The embedded ICC color profile is copied into the PNG, so colors look the same.',
+    c4h: 'Fast & private', c4p: 'Multi-threaded encoder that runs entirely in your browser. Nothing is uploaded.',
+    chip: 'Right-click → PNG', tiled: 'Lossless · Transparency · Exact colors',
+  },
+  ru: {
+    name: 'Сохранить WebP как PNG',
+    h1: 'Правый клик.<br><em>Сохранить как PNG.</em>',
+    sub1: 'Любая WebP-картинка с любого сайта сразу попадает в «Загрузки» в формате PNG.',
+    p1: 'Без потерь', p2: 'С прозрачностью', p3: 'Точные цвета',
+    tab: 'Стикер «Закат» — Галерея',
+    done: 'Готово · 1,4 МБ',
+    m1: 'Открыть картинку в новой вкладке', m2: 'Сохранить картинку как…', m3: 'Копировать картинку', m4: 'Копировать URL картинки',
+    menu: 'Сохранить как PNG', m5: 'Просмотреть код',
+    h2: 'PNG пиксель в пиксель, <em>а не перерисованная копия</em>',
+    tag: 'Прозрачность сохранена',
+    c1h: 'Без потерь', c1p: 'Каждый пиксель сохраняется бит в бит, включая полупрозрачные. Никакой перерисовки через canvas.',
+    c2h: 'Полный альфа-канал', c2p: 'Прозрачность остаётся как была. Непрозрачные картинки пишутся в более компактный RGB PNG.',
+    c3h: 'Точные цвета', c3p: 'Встроенный ICC-профиль переносится в PNG, поэтому цвета выглядят так же.',
+    c4h: 'Быстро и приватно', c4p: 'Многопоточный энкодер работает целиком в браузере. Ничего никуда не загружается.',
+    chip: 'ПКМ → PNG', tiled: 'Без потерь · Прозрачность · Точные цвета',
+  },
+};
+const q = new URLSearchParams(location.search);
+const lang = T[q.get('lang')] ? q.get('lang') : 'en';
+document.documentElement.lang = lang;
+document.body.dataset.shot = q.get('shot') || '1';
+for (const el of document.querySelectorAll('[data-t]')) el.innerHTML = T[lang][el.dataset.t];
+</script>
+</body>
+</html>

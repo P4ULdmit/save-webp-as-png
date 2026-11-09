@@ -1,0 +1,9 @@
+{
+  "extName": {"message": "Save WebP as PNG"},
+  "extDescription": {"message": "Save WebP (or any other image) as PNG from the context menu — lossless, with transparency and color profile preserved."},
+  "menuTitle": {"message": "Save as PNG"},
+  "errTitle": {"message": "Could not save PNG"},
+  "errNoUrl": {"message": "The image has no URL."},
+  "errFetch": {"message": "Could not load the image: $ERROR$", "placeholders": {"error": {"content": "$1", "example": "HTTP 403"}}},
+  "errDownload": {"message": "Could not start the download: $ERROR$", "placeholders": {"error": {"content": "$1", "example": "HTTP 403"}}}
+}

@@ -1,0 +1,9 @@
+{
+  "extName": {"message": "Сохранить WebP как PNG"},
+  "extDescription": {"message": "Сохраняет WebP (и любые другие картинки) в PNG из контекстного меню — без потерь, с прозрачностью и цветовым профилем."},
+  "menuTitle": {"message": "Сохранить как PNG"},
+  "errTitle": {"message": "Не удалось сохранить PNG"},
+  "errNoUrl": {"message": "У изображения нет адреса."},
+  "errFetch": {"message": "Не удалось загрузить изображение: $ERROR$", "placeholders": {"error": {"content": "$1", "example": "HTTP 403"}}},
+  "errDownload": {"message": "Не удалось начать загрузку файла: $ERROR$", "placeholders": {"error": {"content": "$1", "example": "HTTP 403"}}}
+}
